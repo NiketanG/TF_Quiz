@@ -21,6 +21,7 @@ var answers = [];
 var db_attempted_ques = {{ attempted }};
 var db_answers = {{ dbanswers|safe }};
 var attempted_qa = {}
+var question_count = {{ ques_count }}
 /*
 if (db_attempted_ques.length != 0){
     var attempted_qa = Object.assign(...db_attempted_ques.map((k, i) => ({[k]: db_answers[i]})))
@@ -94,7 +95,7 @@ function get_question(increment){
         });
 
         $("div.question_no div").css({"background-color":"transparent", "color":"white"});
-        $("#question_no"+(parseInt(qid, 10) + 1)).css({"background-color":"#00BCD4", "color":"black"});
+        $("#question_no"+(parseInt(qid, 10) + 1)).css({"background-color":"#0(0BCD4", "color":"black"});
 
         if ($.inArray(qid, db_attempted_ques ) == -1){
             $('input[name="options"]').prop("disabled", false);
@@ -110,7 +111,7 @@ function get_question(increment){
     function start_quiz(){
         start_timer();
         //get_question_no('question_no1');
-        for (let i = 0; i <= 16; i++) {
+        for (let i = 0; i <= (parseInt(question_count) - 2); i++) {
             $(".question_no").append("<div class='qnos' id='question_no" + (parseInt(i, 10) + 1) + "'' onclick='get_question_no(this.id)'>" + (parseInt(i, 10) + 1) + "</div>");
             
             if ($.inArray(i, db_attempted_ques ) !== -1){

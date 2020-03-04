@@ -68,9 +68,7 @@ def quiz():
         question_count = db.session.query(coc_questions).count()
     elif curr_user.quiz_name == 3:
         question_count = db.session.query(hotkeys_questions).count()
-
-    print(app.config['EVENT'])
-    print(app.config['QUESTION_COUNT'])
+    
     question_list = random.sample(range(1,question_count), app.config['QUESTION_COUNT'])
     if curr_user.question_ids == None:
         curr_user.question_ids = question_list
@@ -95,7 +93,7 @@ def quiz():
         db_answers = []
     if attempted_ques == None:
         attempted_ques = []
-    return render_template('quiz.html', user=current_user, attempted=attempted_ques, dbanswers=db_answers, quiz_name=curr_user.quiz_name)
+    return render_template('quiz.html', user=current_user, attempted=attempted_ques, dbanswers=db_answers, quiz_name=curr_user.quiz_name, ques_count=question_count)
 
 @user.route('/_get_question')
 def get_question():

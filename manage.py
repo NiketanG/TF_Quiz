@@ -9,14 +9,16 @@ import os
 app = create_app()
 cli = FlaskGroup(create_app=create_app)
 
-file = pd.read_excel(r'/home/nikketan/Projects/TF_QuizPortal/Questions/Questions_Nikketan.xlsx')
-# Open the workbook and define the worksheet
-book = xlrd.open_workbook(r'/home/nikketan/Projects/TF_QuizPortal/Questions/Questions_Nikketan.xlsx')
-sheet = book.sheet_by_name("Sheet1")
+file = pd.read_excel(r'Questions/Questions_Nikketan.xlsx')
+
 
 @cli.command('x_to_db')
 def x_to_db():
     quiz_name = int(input("Enter event ID : (1 - Webber, 2 - COC, 3 - Hotkeys)"))
+    file_name = str(input("Enter File name : "))
+
+    book = xlrd.open_workbook(r'Questions/' + file_name)
+    sheet = book.sheet_by_name("Sheet1")
 
     for i in range(0, sheet.nrows):
         if quiz_name == 1:
@@ -50,7 +52,7 @@ def x_to_db():
         except Exception as e:
             print(e)
             db.session.rollback()
-    print('Questions added')
+    print(str(sheet.nrows) + 'Questions added')
 
 @cli.command('create_db')
 def create_db():
