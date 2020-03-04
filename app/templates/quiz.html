@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+</head>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+
+<script type=text/javascript>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+
+<script type=text/javascript>
+
+var qid=0;
+var attempted_ques = [];
+var answers = [];
+var db_attempted_ques = {{ attempted }};
+var db_answers = {{ dbanswers|safe }};
+var attempted_qa = {}
+/*
+if (db_attempted_ques.length != 0){
+    var attempted_qa = Object.assign(...db_attempted_ques.map((k, i) => ({[k]: db_answers[i]})))
+}
+*/
+function get_question(increment){
+    if (increment == 1){
+        qid++;
+    } else if (increment == -1){
+        qid--;
+    } else {
+        $(".question").show();
+    }
+    $("div.question_no div").css({"background-color":"transparent", "color":"white"});
+    $("#question_no"+(parseInt(qid, 10) + 1)).css({"background-color":"#00BCD4", "color":"black"});
+
+    if ($.inArray(qid, db_attempted_ques ) != -1){
+        var answer = attempted_qa[qid];
+            $('input[name="options"][value="' + answer + '"]').prop("checked", true);
+            //$('input[name="options"]:not(:checked)').prop("disabled", true);
+            $('#submit').prop('disabled', true)
+    } else {
+            
+        $('input[name="options"]').prop("disabled", false);
+            $('#submit').prop('disabled', false)
+    }
+    
+    $.getJSON($SCRIPT_ROOT + '/_get_question', {
+        question_id: qid,
+        }, function(data) {
+            $("#question_title").text(data.question);
+            $("label.opt_a").text(data.option_a);
+            $("label.opt_b").text(data.option_b);
+            $("label.opt_c").text(data.option_c);
+            $("label.opt_d").text(data.option_d);
+        });
+    }
+
+    function submit_answer() {
+        opt_selected = $('input[name="options"]:checked').val();
+        if (($.inArray(qid, attempted_ques)) == -1) {
+            attempted_ques.push(qid);
+            answers.push(opt_selected);
+            $.getJSON($SCRIPT_ROOT + '/_submit_answer', {
+                question_id: qid,
+                answer: opt_selected
+            }, function (data) {
+                db_attempted_ques = data.attempted_ques
+                db_answers = data.answers
+                attempted_qa = data.attempted_qa
+            }
+            );
+        }
+        
+        $("#question_no"+(parseInt(qid, 10) + 1)).addClass("submitted");
+        get_question(1);
+    }
+
+    function get_question_no(id) {
+        id = id.replace("question_no","");
+        qid = id-1;
+        
+        $.getJSON($SCRIPT_ROOT + '/_get_question', {
+        question_id: id-1,
+        }, function(data) {
+            $("#question_title").text(data.question);
+            $("label.opt_a").text(data.option_a);
+            $("label.opt_b").text(data.option_b);
+            $("label.opt_c").text(data.option_c);
+            $("label.opt_d").text(data.option_d);
+        });
+
+        $("div.question_no div").css({"background-color":"transparent", "color":"white"});
+        $("#question_no"+(parseInt(qid, 10) + 1)).css({"background-color":"#00BCD4", "color":"black"});
+
+        if ($.inArray(qid, db_attempted_ques ) == -1){
+            $('input[name="options"]').prop("disabled", false);
+            $('#submit').prop('disabled', false)
+        } else {
+            var answer = attempted_qa[qid];
+            $('input[name="options"][value="' + answer + '"]').prop("checked", true);
+            //$('input[name="options"]:not(:checked)').prop("disabled", true);
+            $('#submit').prop('disabled', true)
+        }
+    }
+
+    function start_quiz(){
+        start_timer();
+        //get_question_no('question_no1');
+        for (let i = 0; i <= 16; i++) {
+            $(".question_no").append("<div class='qnos' id='question_no" + (parseInt(i, 10) + 1) + "'' onclick='get_question_no(this.id)'>" + (parseInt(i, 10) + 1) + "</div>");
+            
+            if ($.inArray(i, db_attempted_ques ) !== -1){
+                $("#question_no"+(parseInt(i, 10) + 1)).addClass("submitted");
+                var answer = attempted_qa[qid];
+                $('input[name="options"][value="' + answer + '"]').prop("checked", true);
+                //$('input[name="options"]:not(:checked)').prop("disabled", true);
+                $('#submit').prop('disabled', true)
+            }
+            else {
+                $('#submit').prop('disabled', false)
+            }
+        }
+        get_question(0)
+    }
+
+    function start_timer() {
+        var time_limit = 30;
+        var currenttime = new Date().getTime();
+        // Set the date we're counting down to
+        var countDownDate = new Date(currenttime + time_limit * 60000);
+
+        // Update the count down every 1 second
+        var x = setInterval(function () {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            $("#timer").html(minutes + "m " + seconds + "s ");
+
+            // If the count down is finished, write some text
+            if (distance <= 0) {
+                clearInterval(x);
+                $("#timer").html("EXPIRED");
+                $("div.timesup").show();
+            }
+        }, 1000);
+    }
+</script>
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:400&display=swap');
+
+    body,
+    html {
+        height: 100%;
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        overflow: hidden;
+    }
+
+    * {
+        margin: 0;
+        box-sizing: border-box;
+
+    }
+
+    div.background {
+        filter: blur(4px);
+        height: calc(100% + 20px);
+        margin-left: -10px;
+        margin-top: -10px;
+        width: calc(100% + 20px);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-image: url('https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80');
+    }
+
+    div.background::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    div.content {
+        top: 50%;
+        left: 50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        width: 70%;
+        border: 1.5px solid white;
+        padding: 25px;
+    }
+
+    div.question {
+        margin-left: 25px;
+    }
+
+    div.buttons {
+
+        text-align: center;
+    }
+
+    label {
+        margin-left: 10px;
+    }
+
+    button {
+        margin: 0px 10px;
+        width: calc(33% - 30px);
+        padding: 12px;
+        font-size: 15px;
+        background-color: transparent;
+        color: white;
+        border: 1.5px white solid;
+        transition: 0.1s linear;
+    }
+
+    button:hover {
+        color: black;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    button:disabled {
+        background-color: rgba(0, 0, 0, 0.5);
+        border: none;
+        cursor: not-allowed;
+    }
+
+    div.question_no {
+        position: absolute;
+        top: 0px;
+        padding: 10px;
+        width: calc(100% - 150px);
+        border-right: 1px solid white;
+    }
+
+    div.question_no div {
+        padding: 8px;
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+        display: inline-block;
+        margin: 5px;
+        border: 1px solid white;
+        text-align: center;
+        transition: 0.2s ease;
+    }
+
+    div.question_no div:hover {
+        color: black;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    .submitted {
+        background-color: #4CAF50 !important;
+        color: black !important;
+    }
+
+    div.timer {
+        position: absolute;
+        top: 10px;
+        right: 0;
+        width: 150px;
+        height: 130px;
+        padding: 35px 25px;
+        font-size: 18px;
+        text-align: center;
+    }
+
+    #timer {
+        color: white;
+    }
+
+    div.timesup {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.75);
+        z-index: 100;
+        position: absolute;
+        top: 0;
+        left: 0;
+        text-align: center;
+        font-size: 25px;
+        display: none;
+    }
+
+    div.timesup2 {
+        margin: 50vh 0px 0px 50vw;
+        transform: translate(-50%, -50%);
+        width: 500px;
+        padding: 50px;
+        background-color: white;
+        color: black;
+    }
+
+    div.timesup2 button {
+        color: black !important;
+        border: 1.5px solid black;
+        width: 200px;
+    }
+
+    div.timesup2 button:hover {
+        color: white !important;
+        background-color: black;
+        width: 200px;
+    }
+
+    div.user {
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+        text-align: right;
+    }
+
+    div.finish {
+        position: absolute;
+        bottom: 10px;
+        left: 20px;
+        text-align: left;
+        width: 150px;
+    }
+
+    div.finish button{
+        width: 150px;
+    }
+</style>
+
+<body onload="start_quiz()">
+    <div class="background"></div>
+    <div class="user">
+        Logged in as <br>{{ user.name }}</div>
+    <div class="content">
+        <div class="question">
+            <h3 id="question_title">Question</h3><br>
+            <input type="radio" name="options" class="opt_a" value="A" checked>
+            <label for="opt_a" class="opt_a">A</label><br>
+            <input type="radio" name="options" value="B" class="opt_b">
+            <label for="opt_b" class="opt_b">B</label><br>
+            <input type="radio" name="options" value="C" class="opt_c">
+            <label for="opt_c" class="opt_c">C</label><br>
+            <input type="radio" name="options" class="opt_d" value="D">
+            <label for="opt_d" class="opt_d">D</label>
+        </div>
+        <br><br>
+        <div class="buttons">
+            <button onclick="submit_answer()" id="submit">Submit</button>
+            <button onclick="get_question(1)">Next Question</button>
+            <button onclick="get_question(-1)">Previous Question</button>
+        </div>
+    </div>
+
+    <div class="question_no">
+    </div>
+
+    <div class="finish">
+        <button onclick="window.location.href = '/finish';">End Quiz</button>
+    </div>
+
+    <div class="timer">
+        Time Left :
+        <div id="timer">
+            30m 00s
+        </div>
+    </div>
+
+    <div class="timesup">
+        <div class="timesup2">
+            Times up !
+            <br><br>
+            <button onclick="window.location.href = '/finish';">End Quiz</button>
+        </div>
+    </div>
+</body>
+
+</html>

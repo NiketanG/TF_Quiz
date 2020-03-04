@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:400&display=swap');
+
+    body,
+    html {
+        height: 100%;
+        text-align: center;
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        overflow: hidden;
+    }
+
+    * {
+        margin: 0;
+        box-sizing: border-box;
+
+    }
+
+    div.background {
+        filter: blur(4px);
+        height: calc(100% + 20px);
+        margin-left: -10px;
+        margin-top: -10px;
+        width: calc(100% + 20px);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-image: url('https://images.unsplash.com/photo-1515879218367-8466d910aaa4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80');
+        /*
+        https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80
+        */
+    }
+
+    div.background::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    div.content {
+        top: 50%;
+        left: 50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+    }
+
+    button {
+        margin: 30px 10px;
+        width: 200px;
+        padding: 12px;
+        font-size: 15px;
+        background-color: transparent;
+        color: white;
+        border: 1.5px white solid;
+        transition: 0.1s linear;
+    }
+
+    button:hover {
+        color: black;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    p {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    div.flash{
+        width: 100%;
+        position: absolute;
+        top:10px;
+    }
+    div.flashes {
+        margin: 10px 0px 0px 0px; 
+        border: 1px solid white; 
+        padding: 10px; 
+        width: 60%;
+        margin-left: 50%;
+        transform: translate(-50%, 0%);
+    }
+    select{
+        margin-top: -25px;
+        background-color: rgba(255, 255, 255, 0.5);
+        border: none;
+        width: 200px;
+        height: 25px;
+        padding-left: 10px;
+        font-size: 16px;
+    }
+</style>
+<script>
+function view_leaderboard(){
+    var selected = document.getElementById("quiz_list")
+    if (selected.value == 1) {
+        window.location.href = "/leaderboard/Webber";
+    } else if (selected.value == 2) {
+        window.location.href = "/leaderboard/COC";
+    } else if (selected.value == 3) {
+        window.location.href = "/leaderboard/Hotkeys";
+    }
+}
+</script>
+<body>
+    <div class="background"></div>
+    <div class="flash">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+
+        {% for message in messages %}
+        <div class=flashes>
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="content">
+        <h1>Select an event to continue</h1>
+        <br>
+        <select id="quiz_list" name="quiz" required=""><option value="1">Webber</option><option value="2">Clash Of Code</option><option value="3">Hotkeys</option></select>
+        <div class="buttons">
+            <button onclick='view_leaderboard()'>View Leaderboard</button>
+        </div>
+    </div>
+</body>
+
+</html>
