@@ -93,13 +93,15 @@ def quiz():
         db_answers = []
     if attempted_ques == None:
         attempted_ques = []
-    return render_template('quiz.html', user=current_user, attempted=attempted_ques, dbanswers=db_answers, quiz_name=curr_user.quiz_name, ques_count=question_count)
+    return render_template('quiz.html', user=current_user, attempted=attempted_ques, dbanswers=db_answers, quiz_name=curr_user.quiz_name, ques_count=int(app.config['QUESTION_COUNT']+1))
 
 @user.route('/_get_question')
 def get_question():
     curr_user = users.query.filter_by(email=current_user.email).first()
     question_id = request.args.get('question_id',0, type=int)
+    
     db_question_id = session['question_list'][question_id]
+    
     if curr_user.quiz_name == 1:
         ques = webber_questions.query.filter_by(question_id=db_question_id).first()
     elif curr_user.quiz_name == 2:
