@@ -40,12 +40,14 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = users.query.filter_by(email=form.email.data).first()
+
         if user and form.password.data == user.password:
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             print('Logged in')
+            print(current_user.name)
             if current_user.name == 'admin':
-                return redirect(next_page) if next_page else redirect(url_for('admin.leaderboard'))
+                return redirect(next_page) if next_page else redirect(url_for('admin.ldrbrd'))
             else:
                 return redirect(next_page) if next_page else redirect(url_for('user.quiz'))
         else:
@@ -59,6 +61,7 @@ def login():
 def quiz():
 
     curr_user = users.query.filter_by(email=current_user.email).first()
+        
     attempted_ques = curr_user.attempted_index
     db_answers = curr_user.answers
 
