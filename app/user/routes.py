@@ -1,10 +1,11 @@
-from flask import render_template, jsonify, Blueprint, redirect, url_for, flash, request, session, current_app as app
+from flask import render_template, jsonify, Blueprint, redirect, url_for, flash, request, session, send_file, send_from_directory, current_app as app
 from flask_login import login_required,current_user, logout_user, login_user
 from app.models import users, webber_questions, coc_questions, hotkeys_questions
 from app.user.forms import RegisterForm, LoginForm
 from app import db
 import random
 import json
+import os
 
 user = Blueprint('user', __name__)
 
@@ -195,3 +196,9 @@ def logout():
 def finish():
     flash('Quiz Finished')
     return redirect(url_for('user.logout'))
+
+
+@user.route('/template')
+def template():
+    path = '../template.zip'
+    return send_file(path, as_attachment=True)
