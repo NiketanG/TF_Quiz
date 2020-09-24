@@ -1,10 +1,10 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 class Config:
-    EVENT = 'Webber'
-    QUESTION_COUNT = 50
-    SECRET_KEY = '57bde4dd-0da1-41dd-b5bc-38d5997d0fc1'
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
-    #'postgresql://postgres:N!kketanGT16@localhost/tf_quiz'
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    

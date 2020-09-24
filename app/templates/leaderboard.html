@@ -1,114 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Leaderboard</title>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
+			crossorigin="anonymous"
+		></script>
+	</head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard</title>
-</head>
-<style>
-    @import url('https://fonts.googleapis.com/css?family=Montserrat:400&display=swap');
+	<script type="text/javascript">
+				      var score = {{ rows|safe }};
+				      window.addEventListener("load", () => {
+				          setTable(score)
+				            })
 
-    body,
-    html {
-        height: 100%;
-        text-align: center;
-        color: white;
-        font-family: 'Montserrat', sans-serif;
-        overflow: hidden;
-    }
+				            function setTable(data) {
+				              if (Array.isArray(data)){
+		                                    document.querySelector("tbody").textContent = '';
+		                                          data.sort((a,b) => b.score - a.score).forEach((el) => {
+				                  const tr = document.createElement("tr");
+				                  tr.setAttribute("id", el.user_id)
+				                  const name = document.createElement("td")
+				                  name.innerText = el.name;
+				                  const phno = document.createElement("td")
+				                  phno.innerText = el.phno;
+				                  const clgname = document.createElement("td")
+				                  clgname.innerText = el.clgname;
+				                  const score = document.createElement("td")
+				                        score.innerText = el.score;
+				                        score.setAttribute("class", "score")
+				                  tr.appendChild(name)
+				                  tr.appendChild(phno)
+				                  tr.appendChild(clgname)
+		                                tr.appendChild(score)
 
-    * {
-        margin: 0;
-        box-sizing: border-box;
+				                  document.querySelector("tbody").append(tr)
+				              })
+				          }
+				            }
 
-    }
+				const socket = io(location.pathname);
 
-    div.background {
-        filter: blur(4px);
-        height: calc(100% + 20px);
-        margin-left: -10px;
-        margin-top: -10px;
-        width: calc(100% + 20px);
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-image: url('/static/images/background.jpeg')
-        /*
+
+				socket.on("stats_updated", (data) => {
+					if (Array.isArray(score)){
+		                            var tempScore = score;
+		                            var updateIndex = tempScore.findIndex((el) => el.user_id === data.user_id);
+		                                        tempScore[updateIndex] = {...tempScore[updateIndex], score: data.score}
+		                                  if (!(score.find((el) => el.user_id === data.user_id))) {
+		                                      tempScore.push({
+		                                          user_id:data.user_id,
+		                                          name:data.name,
+		                                          phno:data.phno,
+
+		                                          clgname:data.clgname,
+		                                          score:data.score
+		                                      })
+		                                  }
+
+		setTable(tempScore)
+
+				          }
+				});
+	</script>
+	<style>
+		@import url("https://fonts.googleapis.com/css?family=Montserrat:400&display=swap");
+
+		body,
+		html {
+			height: 100%;
+			text-align: center;
+			color: white;
+			font-family: "Montserrat", sans-serif;
+			overflow: hidden;
+		}
+
+		* {
+			margin: 0;
+			box-sizing: border-box;
+		}
+
+		div.background {
+			filter: blur(4px);
+			height: calc(100% + 20px);
+			margin-left: -10px;
+			margin-top: -10px;
+			width: calc(100% + 20px);
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-image: url("/static/images/background.jpeg");
+			/*
         https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80
         */
-    }
+		}
 
-    div.background::before {
-        content: "";
-        display: block;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(0, 0, 0, 0.5);
-    }
+		div.background::before {
+			content: "";
+			display: block;
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			background: rgba(0, 0, 0, 0.5);
+		}
 
-    div.content {
-        width: 80%;
-        height: 80%;
-        top: 50%;
-        left: 50%;
-        position: absolute;
-        transform: translate(-50%, -50%);
-    }
+		div.content {
+			width: 80%;
+			height: 80%;
+			top: 50%;
+			left: 50%;
+			position: absolute;
+			transform: translate(-50%, -50%);
+		}
 
-    div.table {
-        height: 80%;
-        overflow-y: auto;
-    }
+		div.table {
+			height: 80%;
+			overflow-y: auto;
+		}
 
-    table {
-        border-collapse: collapse;
-        border-spacing: 0;
-        width: 100%;
-        border: 1px solid #ddd;
-    }
+		table {
+			border-collapse: collapse;
+			border-spacing: 0;
+			width: 100%;
+			border: 1px solid #ddd;
+		}
 
-    th,
-    td {
-        text-align: left;
-        padding: 8px;
-    }
+		th,
+		td {
+			text-align: left;
+			padding: 8px;
+		}
 
-    tr:nth-child(even) {
-        background-color: #f2f2f2;
-        color: black;
-    }
-</style>
+		tr:nth-child(even) {
+			background-color: #f2f2f2;
+			color: black;
+		}
+	</style>
 
-<body>
-    <div class="background"></div>
-    <div class="content">
-        <h1>Leaderboard</h1>
-        <br><br>
-        <div class="table">
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Phone No.</th>
-                    <th>College Name</th>
-                    <th>Score</th>
-                </tr>
-                {% for row in rows %}
-                {% if row.name != 'admin' %}
-                <tr>
-                    <td>{{ row.name }}</td>
-                    <td>{{ row.phno }}</td>
-                    <td>{{ row.clgname }}</td>
-                    <td>{{ row.score }}</td>
-                {% endif %}
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-    </div>
-</body>
-
+	<body>
+		<div class="background"></div>
+		<div class="content">
+			<h1>Leaderboard</h1>
+			<br /><br />
+			<div class="table">
+				<table>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Phone No.</th>
+							<th>College Name</th>
+							<th>Score</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+		</div>
+	</body>
 </html>
