@@ -87,4 +87,4 @@ class events(db.Model):
     time = db.Column(db.Integer, default=1800)
 
     def __repr__(self):
-        return f"Events('{self.id}','{self.event_name}','{self.question_count}')"
+        return "<events %r>" % (self.event_name)

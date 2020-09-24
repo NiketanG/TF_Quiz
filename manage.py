@@ -9,6 +9,14 @@ app = create_app()
 cli = FlaskGroup(create_app=create_app)
 
 
+@cli.command("create_db")
+def create_db():
+    """Create Database Tables"""
+    db.create_all()
+    db.session.commit()
+    print("Database Created")
+
+
 @cli.command("add_event")
 def add_event():
     """Add Events to Database"""
@@ -97,14 +105,6 @@ def x_to_db():
             print(e)
             db.session.rollback()
     print(str(sheet.nrows) + " Questions added")
-
-
-@cli.command("create_db")
-def create_db():
-    """Create Database Tables"""
-    db.create_all()
-    db.session.commit()
-    print("Database Created")
 
 
 if __name__ == "__main__":
