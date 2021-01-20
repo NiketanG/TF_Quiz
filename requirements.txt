@@ -25,7 +25,7 @@ Mako==1.1.4
 MarkupSafe==1.1.1
 monotonic==1.5
 numpy==1.19.5
-pandas==1.2.0
+pandas==1.2.1
 pathspec==0.8.1
 psycopg2-binary==2.8.6
 pycodestyle==2.6.0
