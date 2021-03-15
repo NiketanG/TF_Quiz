@@ -1,4 +1,4 @@
-alembic==1.5.6
+alembic==1.5.7
 appdirs==1.4.4
 attrs==20.3.0
 autopep8==1.5.5
