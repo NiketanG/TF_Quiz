@@ -24,7 +24,7 @@ Jinja2==2.11.3
 Mako==1.1.4
 MarkupSafe==1.1.1
 monotonic==1.5
-numpy==1.20.1
+numpy==1.20.2
 pandas==1.2.3
 pathspec==0.8.1
 psycopg2-binary==2.8.6
