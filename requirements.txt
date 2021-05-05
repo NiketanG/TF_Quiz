@@ -37,7 +37,7 @@ python-engineio==4.1.0
 python-socketio==5.2.1
 pytz==2021.1
 regex==2021.4.4
-six==1.15.0
+six==1.16.0
 SQLAlchemy==1.4.13
 toml==0.10.2
 typed-ast==1.4.3
