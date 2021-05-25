@@ -53,7 +53,7 @@ python manage.py add_events
 
 Add Questions from .xlsx:
 
-> Create .xlsx file for Questions from Format Provided in the Questions Directory.
+> Create .xlsx file for Questions from Format Provided in the [`Questions`](/Questions) Directory.
 
 ```
 python manage.py excel_to_db
