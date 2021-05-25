@@ -2,7 +2,7 @@ from flask.cli import FlaskGroup
 from app import create_app, db, bcrypt
 from app.models import questions, users, events
 
-import xlrd
+import pandas
 import os
 
 app = create_app()
@@ -69,7 +69,7 @@ def setup_admin():
 
 @cli.command("excel_to_db")
 def x_to_db():
-    """ Insert Questions into Database from Excel Sheet"""
+    """Insert Questions into Database from Excel Sheet"""
     event_list = events.query.all()
     quiz_name = int(
         input(
@@ -83,18 +83,17 @@ def x_to_db():
         return
     file_name = str(input("Enter File name : "))
 
-    book = xlrd.open_workbook(r"Questions/" + file_name)
-    sheet = book.sheet_by_name("Sheet1")
+    df1 = pandas.read_excel(r"Questions/" + file_name, engine="openpyxl", header=None)
 
-    for i in range(0, sheet.nrows):
+    for i, row in df1.iterrows():
         question = questions(
             question_id=int(i),
-            question=str(sheet.cell(i, 0).value).replace("\n", ""),
-            option_a=str(sheet.cell(i, 1).value).replace("\n", ""),
-            option_b=str(sheet.cell(i, 2).value).replace("\n", ""),
-            option_c=str(sheet.cell(i, 3).value).replace("\n", ""),
-            option_d=str(sheet.cell(i, 4).value).replace("\n", ""),
-            answer=str(sheet.cell(i, 5).value).replace("\n", ""),
+            question=str(row.get(0)).replace("\n", ""),
+            option_a=str(row.get(1)).replace("\n", ""),
+            option_b=str(row.get(2)).replace("\n", ""),
+            option_c=str(row.get(3)).replace("\n", ""),
+            option_d=str(row.get(4)).replace("\n", ""),
+            answer=str(row.get(5)).replace("\n", ""),
             event_id=str(quiz_name),
         )
 
@@ -104,7 +103,7 @@ def x_to_db():
         except Exception as e:
             print(e)
             db.session.rollback()
-    print(str(sheet.nrows) + " Questions added")
+    print("Questions added")
 
 
 if __name__ == "__main__":

@@ -4,12 +4,12 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Quiz</title>
-	</head>
+		<script src="https://cdn.socket.io/4.1.1/socket.io.min.js" integrity="sha384-cdrFIqe3RasCMNE0jeFG9xJHog/tgOVC1E9Lzve8LQN1g5WUHo0Kvk1mawWjxX7a" crossorigin="anonymous"></script>
 
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
-		crossorigin="anonymous"
-	></script>
+	
+
+	
+
 
 	<script type="text/javascript">
 		$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
@@ -419,6 +419,7 @@
 			text-align: center;
 		}
 	</style>
+	</head>
 
 	<body onload="start_quiz()">
 		<div class="background"></div>
